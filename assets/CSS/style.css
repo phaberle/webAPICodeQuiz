@@ -51,3 +51,11 @@ header {
     background-color: cornflowerblue;
     color: black;
 }
+
+#response {
+    margin: 0 auto 0;
+    width: 800px;
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
