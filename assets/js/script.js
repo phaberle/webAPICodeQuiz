@@ -176,7 +176,6 @@ function startTimer() {
         if (sec < 0) {
             clearInterval(timerInterval);
             qContainer.textContent = "Time is up.";
-            clearQuizContainerNonQuiz();
             showStartBtn();
         }
     }, 1000);
