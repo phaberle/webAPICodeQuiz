@@ -4,6 +4,7 @@ var answerSec = document.querySelector("#answers");
 var hsLink = document.querySelector("#highScoreLink");
 var timer = document.querySelector("#timerDiv");
 var numUserCorrect = 0;
+var timerInterval;
 
 var Q1 = {
     question: "Which of the following is the correct JavaScript source declaration on a HTML page?",
@@ -101,7 +102,7 @@ var questionTemplate = function(object) {
 }
 
 //while quiz running
-function clearQuizContainerQuiz() {
+function clearQuizContainerQuiz(questionUp_id) {
     var x = document.querySelector("#quizContainer span");
     var y = document.querySelector("#answers");
     var z = document.querySelector("#response");
@@ -109,6 +110,7 @@ function clearQuizContainerQuiz() {
     y.remove();
     z.innerHTML = "";
     z.setAttribute("style", "border:none;");
+    getNextQuestion(questionUp_id);
 }
 
 //while quiz not running
@@ -129,13 +131,16 @@ var gradeUserAnswer = function(li_id) {
     if (!grade) {
         reactToUserAnswer(grade);
         deductTime();
-        setTimeout(clearQuizContainerQuiz, 2000);
-        getNextQuestion(questionUp_id)
+        setTimeout(function() {
+            clearQuizContainerQuiz(questionUp_id);
+        }, 2000);
+
     } else if (grade) {
         reactToUserAnswer(grade);
         numUserCorrect++;
-        setTimeout(clearQuizContainerQuiz, 2000);
-        getNextQuestion(questionUp_id);
+        setTimeout(function() {
+            clearQuizContainerQuiz(questionUp_id)
+        }, 2000);
     }
 }
 
@@ -165,17 +170,18 @@ deductTime();
 
 function startTimer() {
     console.log('timer suppose to go')
-    var timer = setInterval(function() {
+    timerInterval = setInterval(function() {
         sec--;
         document.getElementById('timerDiv').innerHTML = '00:' + sec;
         if (sec < 0) {
-            clearInterval(timer);
+            clearInterval(timerInterval);
             qContainer.textContent = "Time is up.";
             clearQuizContainerNonQuiz();
             showStartBtn();
         }
     }, 1000);
 }
+
 
 function deductTime() {
     sec -= 5;
@@ -185,6 +191,7 @@ function deductTime() {
 
 //POST QUIZ
 var showOutcome = function() {
+    clearInterval(timerInterval);
     timer.setAttribute("style", "color:white;");
     var timeDiv = document.querySelector("#timerDiv");
     var timeRemaining = timeDiv.textContent;
@@ -265,10 +272,12 @@ var getNextQuestion = function(currentQuestion) {
 
 
 var startQuiz = function() {
+    sec = 60;
+    numUserCorrect = 0;
+    document.getElementById('timerDiv').innerHTML = '00:' + sec;
     clearQuizContainerNonQuiz();
     timer.setAttribute("style", "color:black;");
     startTimer();
-    // location.reload();
     questionTemplate(Q1);
 }
 

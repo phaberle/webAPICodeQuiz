@@ -17,7 +17,6 @@ header {
 }
 
 #quizContainer {
-    border: black solid 2px;
     width: 800px;
     height: 600px;
     margin: 0 auto 0;
@@ -56,10 +55,10 @@ header {
     margin: 0 auto 0;
     width: 800px;
     text-align: center;
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
     font-weight: bold;
     position: relative;
-    top: 175px;
+    top: 5px;
 }
 
 #score {
