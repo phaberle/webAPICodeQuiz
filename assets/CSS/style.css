@@ -56,6 +56,56 @@ header {
     margin: 0 auto 0;
     width: 800px;
     text-align: center;
-    margin-top: 15px;
+    margin-bottom: 15px;
     font-weight: bold;
+    position: relative;
+    top: 175px;
+}
+
+#score {
+    text-align: center;
+    display: table;
+    margin: 0 auto;
+    margin-top: 25px;
+}
+
+#highScoreForm {
+    display: table;
+    margin: 0 auto;
+    margin-top: 15px;
+}
+
+#highScore {
+    display: table;
+    margin: 0 auto;
+    margin-top: 200px;
+}
+
+#name {
+    height: 36px;
+}
+
+input[type=text] {
+    padding: 14px 20px;
+    font-size: 24px;
+    margin-top: 25px;
+}
+
+#btn,
+#startBtn {
+    padding: 10px;
+    font-size: 24px;
+    background: green;
+    border: 1px green solid;
+    border-radius: 10px;
+    width: 250px;
+    color: white;
+    font-weight: bold;
+    box-shadow: -1px 5px 8px;
+    margin-top: 36px;
+}
+
+.btnAlignment {
+    display: table;
+    margin: 0 auto;
 }

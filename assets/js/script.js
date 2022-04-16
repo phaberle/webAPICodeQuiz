@@ -1,6 +1,9 @@
 var qContainer = document.querySelector("#quizContainer");
 var qSec = document.querySelector("#question");
 var answerSec = document.querySelector("#answers");
+var hsLink = document.querySelector("#highScoreLink");
+var timer = document.querySelector("#timerDiv");
+var numUserCorrect = 0;
 
 var Q1 = {
     question: "Which of the following is the correct JavaScript source declaration on a HTML page?",
@@ -97,7 +100,8 @@ var questionTemplate = function(object) {
     answerUL.appendChild(aLI4);
 }
 
-function clearForNextQuestion() {
+//while quiz running
+function clearQuizContainerQuiz() {
     var x = document.querySelector("#quizContainer span");
     var y = document.querySelector("#answers");
     var z = document.querySelector("#response");
@@ -105,6 +109,15 @@ function clearForNextQuestion() {
     y.remove();
     z.innerHTML = "";
     z.setAttribute("style", "border:none;");
+}
+
+//while quiz not running
+function clearQuizContainerNonQuiz() {
+    try {
+        while (qContainer.firstChild) {
+            qContainer.removeChild(qContainer.firstChild);
+        }
+    } catch (error) {}
 }
 
 
@@ -116,11 +129,12 @@ var gradeUserAnswer = function(li_id) {
     if (!grade) {
         reactToUserAnswer(grade);
         deductTime();
-        setTimeout(clearForNextQuestion, 2000);
-        getNextQuestion(questionUp_id);
+        setTimeout(clearQuizContainerQuiz, 2000);
+        getNextQuestion(questionUp_id)
     } else if (grade) {
         reactToUserAnswer(grade);
-        setTimeout(clearForNextQuestion, 2000);
+        numUserCorrect++;
+        setTimeout(clearQuizContainerQuiz, 2000);
         getNextQuestion(questionUp_id);
     }
 }
@@ -146,7 +160,7 @@ var getLI_id = function(event) {
 
 
 //TIMER
-var sec = 60;
+var sec = 65;
 deductTime();
 
 function startTimer() {
@@ -156,7 +170,9 @@ function startTimer() {
         document.getElementById('timerDiv').innerHTML = '00:' + sec;
         if (sec < 0) {
             clearInterval(timer);
-            alert("Time is up!")
+            qContainer.textContent = "Time is up.";
+            clearQuizContainerNonQuiz();
+            showStartBtn();
         }
     }, 1000);
 }
@@ -167,6 +183,69 @@ function deductTime() {
 };
 //
 
+//POST QUIZ
+var showOutcome = function() {
+    timer.setAttribute("style", "color:white;");
+    var timeDiv = document.querySelector("#timerDiv");
+    var timeRemaining = timeDiv.textContent;
+    var score = "Score: " + numUserCorrect + "/4 @ " + timeRemaining + "";
+    var scoreSpan = document.createElement("span");
+    scoreSpan.setAttribute("id", "score");
+    scoreSpan.textContent = score;
+    qContainer.appendChild(scoreSpan);
+    promptToSaveHighScore();
+}
+
+var promptToSaveHighScore = function() {
+    var hsForm = document.createElement("form");
+    hsForm.setAttribute("id", "highScoreForm");
+    qContainer.appendChild(hsForm);
+    hsForm.innerHTML = "<label for='playerName'>Enter Name:</label></br><input type='text' placeholder='Your Name' name='playerName'  class='formInput'\/></br><button type='submit' id='btn' class='btnAlignment'>Save Score</button>";
+    showStartBtn();
+}
+
+var highScoreController = function(event) {
+        event.preventDefault();
+        var nameInput = document.querySelector("input[name='playerName']").value;
+        var playerScoreRaw = document.querySelector("#score").textContent;
+        var playerScore = playerScoreRaw.substring(6);
+        var tempName = "Player";
+        if (nameInput.length == 0 || nameInput == undefined) {
+            window.alert("You didn't enter a name.\n I saw that.\nYour name is \"Player.\"");
+        } else {
+            tempName = nameInput;
+        }
+        var player = {
+            playerName: tempName.trim(),
+            score: playerScore.trim()
+        };
+        localStorage.setItem("player", JSON.stringify(player));
+    }
+    //
+
+var showHighScore = function() {
+    clearQuizContainerNonQuiz();
+    try {
+        var player = localStorage.getItem("player");
+        var translated = JSON.parse(player);
+        var hs = document.createElement("span");
+        hs.setAttribute("id", "highScore");
+        hs.textContent = translated.playerName + ": " + translated.score;
+        qContainer.appendChild(hs);
+        showStartBtn();
+    } catch (error) {
+        window.alert("No score to display.")
+    }
+}
+
+var showStartBtn = function() {
+    var startBtn = document.createElement("button");
+    startBtn.setAttribute("id", "startBtn");
+    startBtn.setAttribute("class", "btnAlignment");
+    startBtn.setAttribute("onclick", "startQuiz()");
+    startBtn.textContent = "Start Quiz";
+    qContainer.appendChild(startBtn);
+}
 
 var getNextQuestion = function(currentQuestion) {
     switch (currentQuestion) {
@@ -179,10 +258,22 @@ var getNextQuestion = function(currentQuestion) {
         case "Q3":
             questionTemplate(Q4);
             break;
+        case "Q4":
+            showOutcome();
     }
 }
 
-startTimer();
-questionTemplate(Q1);
+
+var startQuiz = function() {
+    clearQuizContainerNonQuiz();
+    timer.setAttribute("style", "color:black;");
+    startTimer();
+    // location.reload();
+    questionTemplate(Q1);
+}
+
+showStartBtn();
 
 qContainer.addEventListener("click", getLI_id);
+qContainer.addEventListener("submit", highScoreController);
+hsLink.addEventListener("click", showHighScore);
